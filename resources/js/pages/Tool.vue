@@ -141,6 +141,7 @@
                       'single-day-events',
                       'nc-col-' + day.weekdayColumn,
                     ]"
+                    @click="dayClick(day)"
                   >
                     <template v-for="event in day.eventsSingleDay">
                       <div
@@ -260,6 +261,10 @@ export default {
       } else {
         return this.styles.default;
       }
+    },
+
+    dayClick(day) {
+      console.log(day);
     },
   },
 
