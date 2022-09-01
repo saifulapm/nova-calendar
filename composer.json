@@ -10,15 +10,21 @@
         "date"
     ],
     "license": [
-      "AGPL-3.0-or-later",
-      "proprietary"
+        "AGPL-3.0-or-later",
+        "proprietary"
     ],
     "require": {
         "php": "^8.1",
         "illuminate/support": "^9.0",
-        "laravel/nova": "^4.2.4",
+        "laravel/nova": "~4.0",
         "wdelfuego/nova-datetime": "^1.0.1"
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "./nova"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Wdelfuego\\NovaCalendar\\": "src/"
