@@ -2,18 +2,18 @@
 
 /*
  * © Copyright 2022 · Willem Vervuurt, Studio Delfuego
- * 
+ *
  * You can modify, use and distribute this package under one of two licenses:
  * 1. GNU AGPLv3
- * 2. A perpetual, non-revocable and 100% free (as in beer) do-what-you-want 
+ * 2. A perpetual, non-revocable and 100% free (as in beer) do-what-you-want
  *    license that allows both non-commercial and commercial use, under conditions.
  *    See LICENSE.md for details.
- * 
+ *
  *    (it boils down to: do what you want as long as you're building and/or
  *     using calendar views, but don't embed this package or a modified version
  *     of it in free or paid-for software libraries and packages aimed at developers).
  */
- 
+
 namespace Wdelfuego\NovaCalendar;
 
 use DateTimeInterface;
@@ -24,28 +24,7 @@ use Illuminate\Support\Facades\Log;
 
 class CalendarDay implements CalendarDayInterface
 {
-    public static function forDateInYearAndMonth(Carbon $date, int $year, int $month, int $firstDayOfWeek = null) : self
-    {
-        $firstDayOfWeek = $firstDayOfWeek ?? NovaCalendar::MONDAY;
 
-        return new self(
-            $date->copy()->setTime(0,0),
-            self::weekdayColumn($date, $firstDayOfWeek),
-            $date->format('j'),
-            $date->year == $year && $date->month == $month,
-            $date->isToday(),
-            $date->isWeekend(),
-        );
-    }
-    
-    public static function weekdayColumn(Carbon $date, int $firstDayOfWeek = 1) : int
-    {
-        $absDay = $date->dayOfWeekIso;
-        $mod = ($absDay - $firstDayOfWeek) % 7;
-        while($mod < 0) { $mod += 7; }
-        return $mod + 1;
-    }
-    
     public $start;
     protected $weekdayColumn;
     protected $label;
@@ -54,7 +33,7 @@ class CalendarDay implements CalendarDayInterface
     protected $isToday;
     protected $isWeekend;
     protected $events;
-    
+
     public function __construct(
         DateTimeInterface $start,
         int $weekdayColumn,
@@ -62,7 +41,7 @@ class CalendarDay implements CalendarDayInterface
         bool $isWithinRange = true,
         bool $isToday = false,
         bool $isWeekend = false,
-        array $events = [], 
+        array $events = [],
     )
     {
         $this->start = $start;
@@ -74,13 +53,13 @@ class CalendarDay implements CalendarDayInterface
         $this->isWeekend = $isWeekend;
         $this->events = $events;
     }
-    
+
     public function withEvents(array $events) : self
     {
         $this->events = $events;
         return $this;
     }
-    
+
     public function toArray() : array
     {
         return [
@@ -94,48 +73,48 @@ class CalendarDay implements CalendarDayInterface
             'eventsMultiDay' => $this->eventsMultiDay(),
         ];
     }
-    
+
     private function eventsSingleDay() : array
     {
         return array_filter($this->events, fn($e): bool => !!$e['isSingleDayEvent']);
     }
-    
+
     private function eventsMultiDay() : array
     {
-        
+
         return array_filter($this->events, fn($e): bool => !$e['isSingleDayEvent']);
     }
-    
+
     public function badges(array $v = null) : array
     {
-        if(!is_null($v)) 
+        if(!is_null($v))
         {
             $this->badges = $v;
         }
-        
+
         return $this->badges;
     }
-    
+
     public function addBadge(string $v) : self
     {
         return $this->addBadges($v);
     }
-    
+
     public function addBadges(string ...$v) : self
     {
         foreach($v as $badge)
         {
-            $this->badges[] = $badge;            
+            $this->badges[] = $badge;
         }
-        
+
         return $this;
     }
-    
+
     public function removeBadge(string $v) : self
     {
         return $this->removeBadges($v);
     }
-    
+
     public function removeBadges(string ...$v) : self
     {
         foreach($v as $badge)
@@ -145,5 +124,27 @@ class CalendarDay implements CalendarDayInterface
             });
         }
         return $this;
+    }
+
+    public static function forDateInYearAndMonth(Carbon $date, int $year, int $month, int $firstDayOfWeek = null) : self
+    {
+        $firstDayOfWeek = $firstDayOfWeek ?? NovaCalendar::MONDAY;
+
+        return new self(
+            $date->copy()->setTime(0,0),
+            self::weekdayColumn($date, $firstDayOfWeek),
+            $date->format('j'),
+            $date->year == $year && $date->month == $month,
+            $date->isToday(),
+            $date->isWeekend(),
+        );
+    }
+
+    public static function weekdayColumn(Carbon $date, int $firstDayOfWeek = 1) : int
+    {
+        $absDay = $date->dayOfWeekIso;
+        $mod = ($absDay - $firstDayOfWeek) % 7;
+        while($mod < 0) { $mod += 7; }
+        return $mod + 1;
     }
 }
